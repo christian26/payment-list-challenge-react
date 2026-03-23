@@ -8,6 +8,7 @@ import {
   SearchInput,
   SearchButton,
   ClearButton,
+  Select,
   StatusBadge,
   Spinner,
   ErrorBox,
@@ -27,12 +28,14 @@ import {
 } from "../../../components/organisms";
 import { usePayments } from "../hooks";
 import { Payment } from "../../../types/payment";
+import { CURRENCIES } from "../../../constants";
 
 export const PaymentsPage = () => {
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
+  const [currency, setCurrency] = useState("");
 
-  const { data, isLoading, error } = usePayments({ search });
+  const { data, isLoading, error } = usePayments({ search, currency });
   const payments = data?.payments ?? [];
 
   const errorMessage = (() => {
@@ -45,7 +48,7 @@ export const PaymentsPage = () => {
     return I18N.SOMETHING_WENT_WRONG;
   })();
 
-  const hasActiveFilters = search !== "";
+  const hasActiveFilters = search !== "" || currency !== "";
 
   const handleSearch = () => {
     setSearch(searchInput);
@@ -54,6 +57,7 @@ export const PaymentsPage = () => {
   const handleClear = () => {
     setSearchInput("");
     setSearch("");
+    setCurrency("");
   };
 
   return (
@@ -68,6 +72,16 @@ export const PaymentsPage = () => {
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
         />
+        <Select
+          aria-label={I18N.CURRENCY_FILTER_LABEL}
+          value={currency}
+          onChange={(e) => setCurrency(e.target.value)}
+        >
+          <option value="">{I18N.CURRENCIES_OPTION}</option>
+          {CURRENCIES.map((c) => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </Select>
         <SearchButton onClick={handleSearch}>{I18N.SEARCH_BUTTON}</SearchButton>
         {hasActiveFilters && (
           <ClearButton onClick={handleClear}>{I18N.CLEAR_FILTERS}</ClearButton>

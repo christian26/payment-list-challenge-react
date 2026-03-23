@@ -6,12 +6,14 @@ export interface FetchPaymentsParams {
   page: number;
   pageSize: number;
   search?: string;
+  currency?: string;
 }
 
 export async function fetchPayments({
   page,
   pageSize,
   search,
+  currency,
 }: FetchPaymentsParams): Promise<PaymentSearchResponse> {
   const params = new URLSearchParams({
     page: String(page),
@@ -20,6 +22,10 @@ export async function fetchPayments({
 
   if (search) {
     params.set("search", search);
+  }
+
+  if (currency) {
+    params.set("currency", currency);
   }
 
   const response = await axios.get<PaymentSearchResponse>(
