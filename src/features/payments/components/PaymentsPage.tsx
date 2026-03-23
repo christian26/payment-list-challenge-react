@@ -9,6 +9,7 @@ import {
   SearchButton,
   ClearButton,
   Select,
+  PaginationButton,
   StatusBadge,
   Spinner,
   ErrorBox,
@@ -17,6 +18,7 @@ import {
 } from "../../../components/atoms";
 import {
   FlexRow,
+  PaginationRow,
   TableRow,
   TableHeaderRow,
 } from "../../../components/molecules";
@@ -34,9 +36,11 @@ export const PaymentsPage = () => {
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [currency, setCurrency] = useState("");
+  const [page, setPage] = useState(1);
 
-  const { data, isLoading, error } = usePayments({ search, currency });
+  const { data, isLoading, error } = usePayments({ search, currency, page });
   const payments = data?.payments ?? [];
+  const totalPages = data ? Math.ceil(data.total / data.pageSize) : 1;
 
   const errorMessage = (() => {
     if (!error) return null;
@@ -52,12 +56,14 @@ export const PaymentsPage = () => {
 
   const handleSearch = () => {
     setSearch(searchInput);
+    setPage(1);
   };
 
   const handleClear = () => {
     setSearchInput("");
     setSearch("");
     setCurrency("");
+    setPage(1);
   };
 
   return (
@@ -126,6 +132,21 @@ export const PaymentsPage = () => {
               ))}
             </TableBodyWrapper>
           </Table>
+          <PaginationRow>
+            <PaginationButton
+              disabled={page <= 1}
+              onClick={() => setPage((p) => p - 1)}
+            >
+              {I18N.PREVIOUS_BUTTON}
+            </PaginationButton>
+            <span>{I18N.PAGE_LABEL} {page}</span>
+            <PaginationButton
+              disabled={page >= totalPages}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              {I18N.NEXT_BUTTON}
+            </PaginationButton>
+          </PaginationRow>
         </TableWrapper>
       )}
     </Container>
