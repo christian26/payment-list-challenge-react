@@ -6,12 +6,17 @@ import {
   Title,
   SearchInput,
   SearchButton,
+  ClearButton,
   StatusBadge,
   Spinner,
   TableHeader,
   TableCell,
 } from "../../../components/atoms";
-import { FlexRow, TableRow, TableHeaderRow } from "../../../components/molecules";
+import {
+  FlexRow,
+  TableRow,
+  TableHeaderRow,
+} from "../../../components/molecules";
 import {
   TableWrapper,
   Table,
@@ -28,8 +33,15 @@ export const PaymentsPage = () => {
   const { data, isLoading } = usePayments({ search });
   const payments = data?.payments ?? [];
 
+  const hasActiveFilters = search !== "";
+
   const handleSearch = () => {
     setSearch(searchInput);
+  };
+
+  const handleClear = () => {
+    setSearchInput("");
+    setSearch("");
   };
 
   return (
@@ -44,9 +56,10 @@ export const PaymentsPage = () => {
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
         />
-        <SearchButton onClick={handleSearch}>
-          {I18N.SEARCH_BUTTON}
-        </SearchButton>
+        <SearchButton onClick={handleSearch}>{I18N.SEARCH_BUTTON}</SearchButton>
+        {hasActiveFilters && (
+          <ClearButton onClick={handleClear}>{I18N.CLEAR_FILTERS}</ClearButton>
+        )}
       </FlexRow>
 
       {isLoading && <Spinner />}
