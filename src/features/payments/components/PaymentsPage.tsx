@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 import { I18N } from "../../../constants/i18n";
 import { formatDate, formatAmount } from "../../../utils";
 import {
@@ -9,6 +10,7 @@ import {
   ClearButton,
   StatusBadge,
   Spinner,
+  ErrorBox,
   TableHeader,
   TableCell,
 } from "../../../components/atoms";
@@ -30,8 +32,18 @@ export const PaymentsPage = () => {
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
 
-  const { data, isLoading } = usePayments({ search });
+  const { data, isLoading, error } = usePayments({ search });
   const payments = data?.payments ?? [];
+
+  const errorMessage = (() => {
+    if (!error) return null;
+    if (axios.isAxiosError(error)) {
+      const status = error.response?.status;
+      if (status === 404) return I18N.PAYMENT_NOT_FOUND;
+      if (status === 500) return I18N.INTERNAL_SERVER_ERROR;
+    }
+    return I18N.SOMETHING_WENT_WRONG;
+  })();
 
   const hasActiveFilters = search !== "";
 
@@ -64,7 +76,9 @@ export const PaymentsPage = () => {
 
       {isLoading && <Spinner />}
 
-      {!isLoading && payments.length > 0 && (
+      {errorMessage && <ErrorBox>{errorMessage}</ErrorBox>}
+
+      {!isLoading && !errorMessage && payments.length > 0 && (
         <TableWrapper>
           <Table>
             <TableHeaderWrapper>
