@@ -5,16 +5,22 @@ import { PaymentSearchResponse } from "../../types/payment";
 export interface FetchPaymentsParams {
   page: number;
   pageSize: number;
+  search?: string;
 }
 
 export async function fetchPayments({
   page,
   pageSize,
+  search,
 }: FetchPaymentsParams): Promise<PaymentSearchResponse> {
   const params = new URLSearchParams({
     page: String(page),
     pageSize: String(pageSize),
   });
+
+  if (search) {
+    params.set("search", search);
+  }
 
   const response = await axios.get<PaymentSearchResponse>(
     `${API_URL}?${params.toString()}`,

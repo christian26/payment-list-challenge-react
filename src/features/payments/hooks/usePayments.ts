@@ -4,9 +4,14 @@ import { PaymentSearchResponse } from "../../../types/payment";
 
 const PAGE_SIZE = 5;
 
-export function usePayments(page: number = 1) {
+interface UsePaymentsParams {
+  page?: number;
+  search?: string;
+}
+
+export function usePayments({ page = 1, search }: UsePaymentsParams = {}) {
   return useQuery<PaymentSearchResponse, Error>({
-    queryKey: ["payments", page],
-    queryFn: () => fetchPayments({ page, pageSize: PAGE_SIZE }),
+    queryKey: ["payments", search, page],
+    queryFn: () => fetchPayments({ page, pageSize: PAGE_SIZE, search }),
   });
 }

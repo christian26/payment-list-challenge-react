@@ -1,14 +1,17 @@
+import { useState } from "react";
 import { I18N } from "../../../constants/i18n";
 import { formatDate, formatAmount } from "../../../utils";
 import {
   Container,
   Title,
+  SearchInput,
+  SearchButton,
   StatusBadge,
   Spinner,
   TableHeader,
   TableCell,
 } from "../../../components/atoms";
-import { TableRow, TableHeaderRow } from "../../../components/molecules";
+import { FlexRow, TableRow, TableHeaderRow } from "../../../components/molecules";
 import {
   TableWrapper,
   Table,
@@ -19,12 +22,32 @@ import { usePayments } from "../hooks";
 import { Payment } from "../../../types/payment";
 
 export const PaymentsPage = () => {
-  const { data, isLoading } = usePayments();
+  const [searchInput, setSearchInput] = useState("");
+  const [search, setSearch] = useState("");
+
+  const { data, isLoading } = usePayments({ search });
   const payments = data?.payments ?? [];
+
+  const handleSearch = () => {
+    setSearch(searchInput);
+  };
 
   return (
     <Container>
       <Title>{I18N.PAGE_TITLE}</Title>
+
+      <FlexRow>
+        <SearchInput
+          type="search"
+          aria-label={I18N.SEARCH_LABEL}
+          placeholder={I18N.SEARCH_PLACEHOLDER}
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+        />
+        <SearchButton onClick={handleSearch}>
+          {I18N.SEARCH_BUTTON}
+        </SearchButton>
+      </FlexRow>
 
       {isLoading && <Spinner />}
 
